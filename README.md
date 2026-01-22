@@ -1,2 +1,82 @@
-# E-Commerce-Data-Engineering-BI-Analytics
-AWS Data Lakehouse pipeline: Ingesting 1GB+ e-commerce logs via Amazon S3, Glue Crawlers, and Data Catalog. Leveraged Amazon Athena for serverless SQL and Tableau for BI. This dashboard analyzes Brand Performance, focusing on the intersection of market traffic, customer "stickiness," and conversion efficiency.
+# E-Commerce Data Engineering & BI Analytics
+
+![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white)
+![Tableau](https://img.shields.io/badge/Tableau-E97627?style=for-the-badge&logo=Tableau&logoColor=white)
+![SQL](https://img.shields.io/badge/SQL-00758F?style=for-the-badge&logo=mysql&logoColor=white)
+
+## 📌 Project Overview
+This project demonstrates the construction of a modern **Data Lakehouse architecture**. It transitions from raw, unstructured e-commerce behavior logs to a high-performance executive dashboard. The primary goal was to analyze **Brand Performance** by evaluating the relationship between market volume (Traffic) and customer behavior (Stickiness & Conversion).
+
+## 🏗 System Architecture & Workflow
+The project follows a **"Schema-on-Read"** architecture, leveraging AWS serverless tools for maximum scalability and cost-efficiency.
+
+
+
+* **Storage (Amazon S3):** Raw `.csv` datasets containing millions of rows of user behavior data (views, cart additions, purchases) were ingested into S3 buckets.
+* **Schema Discovery (AWS Glue Crawler):** Configured a Crawler to automatically scan S3 data. This automatically inferred data types (identifying Decimals, Strings, and Timestamps) and handled schema evolution.
+* **Metadata Management (AWS Glue Data Catalog):** The Crawler populated the Data Catalog, creating a centralized metadata repository that allows Athena to treat S3 files as structured SQL tables.
+* **Query Engine (Amazon Athena):** Used Athena’s serverless SQL to validate data quality and perform transformations without the overhead of a traditional database.
+* **BI Visualization (Tableau):** Established a secure connection via JDBC/IAM Access Keys to visualize findings in a multi-layered dashboard.
+
+---
+
+## 📊 Dashboard Insights & Analysis
+
+### 1. Executive KPI Layer
+* **Total Revenue:** High-level sales performance at a glance.
+* **Active Shoppers:** Measuring the total reach and scale of the platform.
+* **Market Share %:** Calculated as `SUM(Brand Revenue) / TOTAL(Revenue)`.
+
+### 2. Competitive Benchmarking
+* **Revenue vs. Popularity:** Compares brands by Total Sales against Total Shoppers. 
+* *Insight:* Brands with high shopper volume but lower revenue rank highlight a lower **Average Order Value (AOV)** opportunity.
+
+### 3. Brand Exploration Depth (Stickiness)
+* **Metric:** `COUNT([Event Type]) / COUNTD([User Session])`
+* **Concept:** Measures how many actions (view, cart, click) a user takes per session. High stickiness indicates strong brand engagement.
+
+### 4. Performance Matrix (Efficiency)
+* **Metric:** `Purchase Count / Total Sessions` (Conversion Rate).
+* *Insight:* Categorizes brands into quadrants: **Market Leaders** (High Traffic/High Conversion) vs. **Niche Gems** (High Efficiency/Low Traffic).
+
+---
+
+## 🛠 Technical Implementation
+
+### Data Source
+> **Dataset Availability:** To optimize cloud storage costs, the 1.5GB raw dataset is hosted externally.
+> 🔗 [Access the Dataset on Kaggle](https://www.kaggle.com/datasets/saumyasinha0510/e-commerce-data-engineering-bi-analytics)
+
+### AWS Configuration
+* **IAM Security:** Implemented "Least Privilege" access by creating a specific IAM user for Tableau connection.
+* **S3 Partitioning:** Organized data to optimize Athena query costs and performance.
+
+### Tableau Calculated Fields (Logic)
+sql
+-- Example: Conversion Rate Calculation
+COUNT(IF [Event Type] = 'purchase' THEN [Event Type] END) / COUNTD([User Session])
+
+
+## 📈 Key Findings & Business Impact
+
+The analysis revealed critical insights into market dynamics and consumer behavior that drive strategic decision-making:
+
+* **🚀 The Market Pareto Effect:** Analysis confirmed a "Winner-takes-all" environment where **71% of total market share** is dominated by a small fraction of top-tier brands.
+* **🔍 Engagement vs. Sales Paradox:** While "Giant" brands like Samsung and Apple lead in raw traffic, they don't always lead in **Stickiness**. Several mid-tier brands showed higher "Exploration Depth," suggesting a more loyal or deeply engaged researcher base.
+* **💡 Growth Opportunity Mapping:** By cross-referencing conversion rates with engagement, I identified **"High Stickiness / Low Conversion"** brands. These represent significant untapped revenue; if checkout friction is reduced, these brands are primed for rapid sales growth.
+
+---
+
+## 🛠 Challenges & Troubleshooting
+
+Building in the cloud rarely goes perfectly on the first try. Below are the technical hurdles overcome during development:
+
+### 1. The "Schema (0)" Issue
+**Challenge:** The Glue Crawler ran successfully, but Athena showed 0 columns for the table.  
+**Resolution:** Discovered the Glue ETL Job was saving data to a default `asset/` folder. I manually corrected the **S3 Target Path** in Glue Studio to the designated `processed/` folder and re-ran the crawler.
+
+### 2. S3 Permission (403 Forbidden)
+**Challenge:** The Glue Job failed during the "Write" phase.  
+**Resolution:** Identified that the IAM Role lacked `PutObject` rights. Attached the necessary policy to give Glue the "pen" it needed to write Parquet files to S3.
+
+
