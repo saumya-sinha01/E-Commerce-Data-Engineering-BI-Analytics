@@ -27,7 +27,7 @@ The project follows a **"Schema-on-Read"** architecture, leveraging AWS serverle
 ---
 
 ## 📊 Dashboard Insights & Analysis
-![Tableau Visualization](tableau%20viz.gif)
+![Tableau Visualization](tableau%20viz.png)
 ### 1. Executive KPI Layer
 * **Total Revenue:** High-level sales performance at a glance.
 * **Active Shoppers:** Measuring the total reach and scale of the platform.
