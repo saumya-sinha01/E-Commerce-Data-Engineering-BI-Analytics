@@ -12,11 +12,17 @@ The project follows a **"Schema-on-Read"** architecture, leveraging AWS serverle
 
 ![Architecture Diagram](Architecture%20diagram.gif)
 
-* **Storage (Amazon S3):** Raw `.csv` datasets containing millions of rows of user behavior data (views, cart additions, purchases) were ingested into S3 buckets.
-* **Schema Discovery (AWS Glue Crawler):** Configured a Crawler to automatically scan S3 data. This automatically inferred data types (identifying Decimals, Strings, and Timestamps) and handled schema evolution.
-* **Metadata Management (AWS Glue Data Catalog):** The Crawler populated the Data Catalog, creating a centralized metadata repository that allows Athena to treat S3 files as structured SQL tables.
-* **Query Engine (Amazon Athena):** Used Athena’s serverless SQL to validate data quality and perform transformations without the overhead of a traditional database.
-* **BI Visualization (Tableau):** Established a secure connection via JDBC/IAM Access Keys to visualize findings in a multi-layered dashboard.
+* **Storage (Amazon S3)**: Raw .csv datasets containing millions of rows of user behavior data (views, cart additions, purchases) were ingested into S3 buckets.
+
+* **Schema Discovery (AWS Glue Crawler)**: Configured a Crawler to automatically scan the raw data. This inferred data types (identifying Decimals, Strings, and Timestamps) and mapped the initial schema.
+
+* **Data Transformation (AWS Glue ETL)**: Developed a specialized Glue Job, ETL_Ecommerce_CSV_to_Parquet, to convert raw CSVs into Apache Parquet format. This step optimized the architecture by utilizing columnar storage, significantly reducing query costs and increasing speed.
+
+* **Metadata Management (AWS Glue Data Catalog)**: The transformed data was registered in the Data Catalog, creating a centralized metadata repository that allows Athena to treat S3 files as structured SQL tables (Schema-on-Read).
+
+* **Query Engine (Amazon Athena)**: Leveraged serverless SQL to perform complex aggregations, calculating metrics like "Stickiness" and "Conversion Rates" directly against the S3 Data Lake.
+
+* **BI Visualization (Tableau)**: Established a secure connection via JDBC and IAM Access Keys to translate SQL insights into a high-fidelity, interactive dashboard.
 
 ---
 
