@@ -5,7 +5,7 @@
 ![SQL](https://img.shields.io/badge/SQL-00758F?style=for-the-badge&logo=mysql&logoColor=white)
 
 ## 📌 Project Overview
-This project demonstrates the construction of a modern **Data Lakehouse architecture**. It transitions from raw, unstructured e-commerce behavior logs to a high-performance executive dashboard. The primary goal was to analyze **Brand Performance** by evaluating the relationship between market volume (Traffic) and customer behavior (Stickiness & Conversion).
+This project demonstrates the construction of a modern Data Lakehouse architecture, successfully transitioning over 1.5GB of raw, e-commerce behavior logs into a high-performance executive dashboard. Beyond traditional sales reporting, the system powers an interactive Tableau dashboard that provides a comprehensive analysis of brand performance by deep-diving into Customer Behavior. By distinguishing between pure Volume (traffic) and Engagement (stickiness), the platform is designed to help stakeholders identify "market leaders," "niche favorites," and critical gaps in the conversion funnel. This scalable, cloud-native approach bridges the gap between complex data engineering—utilizing AWS S3, Glue, and Athena—and actionable business strategy, ensuring that data is not just stored, but transformed into a roadmap for growth.
 
 ## 🏗 System Architecture & Workflow
 The project follows a **"Schema-on-Read"** architecture, leveraging AWS serverless tools for maximum scalability and cost-efficiency.
@@ -53,8 +53,8 @@ The project follows a **"Schema-on-Read"** architecture, leveraging AWS serverle
 
 ### Tableau Calculated Fields (Logic)
 sql
--- Example: Conversion Rate Calculation
-COUNT(IF [Event Type] = 'purchase' THEN [Event Type] END) / COUNTD([User Session])
+  ** Brand Stickiness (Window Shopping Depth): COUNT([Event Type]) / COUNTD([User Session])
+  ** Conversion Rate: COUNT(IF [Event Type] = 'purchase' THEN [Event Type] END) / COUNTD([User Session]
 
 
 ## 📈 Key Findings & Business Impact
