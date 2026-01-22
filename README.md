@@ -62,6 +62,9 @@ sql
   ** Brand Stickiness (Window Shopping Depth): COUNT([Event Type]) / COUNTD([User Session])
   ** Conversion Rate: COUNT(IF [Event Type] = 'purchase' THEN [Event Type] END) / COUNTD([User Session]
 
+### Cloud Cost Awareness
+**Decommissioning**: All AWS resources were successfully terminated post-analysis to demonstrate cloud cost-management and budget responsibility.
+
 
 ## 📈 Key Findings & Business Impact
 
