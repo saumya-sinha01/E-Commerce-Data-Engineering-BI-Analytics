@@ -1,0 +1,65 @@
+1. Sales Velocity
+WITH FirstView AS (
+    SELECT user_id, product_id, MIN(event_time) as first_view_time
+    FROM "ecommerce_db"."processed"
+    WHERE event_type = 'view'
+    GROUP BY user_id, product_id
+),
+ActualPurchase AS (
+    SELECT user_id, product_id, event_time as purchase_time
+    FROM "ecommerce_db"."processed"
+    WHERE event_type = 'purchase'
+)
+SELECT 
+    v.product_id,
+    date_diff('hour', v.first_view_time, p.purchase_time) as hours_to_purchase
+FROM FirstView v
+JOIN ActualPurchase p ON v.user_id = p.user_id AND v.product_id = p.product_id
+WHERE p.purchase_time > v.first_view_time
+ORDER BY hours_to_purchase DESC;
+
+2. Brand Stickiness
+WITH BrandUsers AS (
+    -- Counts how many times each user bought from a specific brand
+    SELECT brand, user_id, COUNT(*) as purchase_count
+    FROM "ecommerce_db"."processed"
+    WHERE event_type = 'purchase' AND brand IS NOT NULL
+    GROUP BY brand, user_id
+)
+SELECT 
+    brand,
+    COUNT(DISTINCT user_id) as total_customers,
+    COUNT(CASE WHEN purchase_count > 1 THEN 1 END) as repeat_customers,
+    ROUND(CAST(COUNT(CASE WHEN purchase_count > 1 THEN 1 END) AS DOUBLE) / 
+          COUNT(DISTINCT user_id) * 100, 2) as stickiness_percentage
+FROM BrandUsers
+GROUP BY brand
+HAVING COUNT(DISTINCT user_id) > 10 -- Ensures statistical significance
+ORDER BY stickiness_percentage DESC;
+
+3. Frequently Bought Together 
+SELECT 
+    a.brand AS brand_A, 
+    b.brand AS brand_B, 
+    COUNT(*) as times_bought_together
+FROM "ecommerce_db"."processed" a
+JOIN "ecommerce_db"."processed" b 
+    ON a.user_id = b.user_id 
+    AND a.product_id < b.product_id
+WHERE a.event_type = 'purchase' 
+  AND b.event_type = 'purchase'
+  -- Checks if items were bought within 5 minutes of each other
+  AND ABS(date_diff('minute', a.event_time, b.event_time)) <= 5
+GROUP BY a.brand, b.brand
+ORDER BY times_bought_together DESC
+LIMIT 20;
+
+4. Top Brands by Popularity
+SELECT brand, COUNT(*) as interaction_count
+FROM "ecommerce_db"."processed"
+WHERE brand IS NOT NULL
+GROUP BY brand
+ORDER BY interaction_count DESC
+LIMIT 10;
+
+
