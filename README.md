@@ -10,7 +10,7 @@ This project demonstrates the construction of a modern **Data Lakehouse architec
 ## 🏗 System Architecture & Workflow
 The project follows a **"Schema-on-Read"** architecture, leveraging AWS serverless tools for maximum scalability and cost-efficiency.
 
-
+![Architecture Diagram](Architecture%20diagram.gif)
 
 * **Storage (Amazon S3):** Raw `.csv` datasets containing millions of rows of user behavior data (views, cart additions, purchases) were ingested into S3 buckets.
 * **Schema Discovery (AWS Glue Crawler):** Configured a Crawler to automatically scan S3 data. This automatically inferred data types (identifying Decimals, Strings, and Timestamps) and handled schema evolution.
@@ -21,7 +21,7 @@ The project follows a **"Schema-on-Read"** architecture, leveraging AWS serverle
 ---
 
 ## 📊 Dashboard Insights & Analysis
-
+![Tableau Visualization](tableau%20viz.gif)
 ### 1. Executive KPI Layer
 * **Total Revenue:** High-level sales performance at a glance.
 * **Active Shoppers:** Measuring the total reach and scale of the platform.
